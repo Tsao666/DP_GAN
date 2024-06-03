@@ -28,6 +28,8 @@ class DP_GAN_model(nn.Module):
         if opt.phase == "train":
             if opt.add_vgg_loss:
                 self.VGG_loss = losses.VGGLoss(self.opt.gpu_ids)
+            if opt.add_inception_loss:
+                self.inception_loss = losses.InceptionV3Loss(self.opt.gpu_ids)
         self.GAN_loss = losses.GANLoss()
         self.MSELoss = nn.MSELoss(reduction='mean')
 
@@ -50,12 +52,20 @@ class DP_GAN_model(nn.Module):
             loss_G += loss_ms.item()
             loss_align = self.align_loss(feats, feats_ref)
             loss_G += loss_align
+
             if self.opt.add_vgg_loss:
                 loss_G_vgg = self.opt.lambda_vgg * self.VGG_loss(fake, image)
                 loss_G += loss_G_vgg
             else:
                 loss_G_vgg = None
-            return loss_G, [loss_G_adv, loss_G_vgg]
+
+            if self.opt.add_inception_loss:
+                loss_G_inception = self.opt.lambda_inception * self.inception_loss(fake, image)
+                loss_G += loss_G_inception
+            else:
+                loss_G_inception = None
+
+            return loss_G, [loss_G_adv, loss_G_vgg, loss_G_inception]
 
         if mode == "losses_D":
             loss_D = 0
@@ -89,8 +99,8 @@ class DP_GAN_model(nn.Module):
 
         if mode == "eval":
             with torch.no_grad():
-                pred, _, _ = self.netD(image)
-            return pred
+                pred, score, _ = self.netD(image)
+            return pred, score
 
     def load_checkpoints(self):
         if self.opt.phase == "test":
@@ -166,7 +176,7 @@ def preprocess_input(opt, data):
     bs, _, h, w = label_map.size()
     nc = opt.semantic_nc
     if opt.gpu_ids != "-1":
-        input_label = torch.cuda.FloatTensor(bs, nc, h, w).zero_()
+        input_label = torch.FloatTensor(bs, nc, h, w).zero_().cuda()
     else:
         input_label = torch.FloatTensor(bs, nc, h, w).zero_()
     input_semantics = input_label.scatter_(1, label_map, 1.0)

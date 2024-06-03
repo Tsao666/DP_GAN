@@ -1,0 +1,38 @@
+python train.py --name UAV --dataset_mode UAV_34_train --gpu_ids 0 --batch_size 8
+python train.py --name UAV_instance --dataset_mode UAV_34_train --param_free_norm instance --gpu_ids 0 --batch_size 8
+python train.py --name UAV_vgg_loss --dataset_mode UAV_34_train --add_vgg_loss --gpu_ids 0 --batch_size 8
+python train.py --name UAV_instance_vgg_loss_full --dataset_mode UAV_34_full --param_free_norm instance --add_vgg_loss --gpu_ids 0 --batch_size 8
+python train.py --name UAV_instance_full --dataset_mode UAV_34_full --param_free_norm instance --gpu_ids 0 --batch_size 8
+python train.py --name UAV_instance_cityscapes --dataset_mode UAV_34_train --param_free_norm instance --lr_g 0.0002 --lr_d 0.0002 --lambda_labelmix 5 --EMA_decay 0.999 --gpu_ids 0 --batch_size 8
+# add contour below
+python train.py --name UAV_instance_cityscapes_contour_inception --dataset_mode UAV_34_train --add_inception_loss --param_free_norm instance --lr_g 0.0002 --lr_d 0.0002 --lambda_labelmix 5 --EMA_decay 0.999 --gpu_ids 0 --batch_size 8
+# set output size 512 * 256 below
+python train.py --name UAV_instance_cityscapes_contour_inception_512 --dataset_mode UAV_34_train --add_inception_loss --param_free_norm instance --lr_g 0.0002 --lr_d 0.0002 --lambda_labelmix 5 --EMA_decay 0.999 --gpu_ids 0 --batch_size 6
+# semantic_nc = 3 below
+python train.py --name UAV_instance_512_inception --dataset_mode UAV_34_train --param_free_norm instance --add_inception_loss --gpu_ids 0 --batch_size 6
+python train.py --name UAV_instance_512 --dataset_mode UAV_34_train --param_free_norm instance --gpu_ids 0 --batch_size 6
+python train.py --name UAV_instance_512_z32 --dataset_mode UAV_34_train --param_free_norm instance --z_dim 32 --gpu_ids 0 --batch_size 8
+python train.py --name UAV_instance_512_z128 --dataset_mode UAV_34_train --param_free_norm instance --z_dim 128 --gpu_ids 0 --batch_size 8
+python train.py --name UAV_instance_512_z128_400 --dataset_mode UAV_34_train --param_free_norm instance --z_dim 128 --num_epochs 400 --gpu_ids 0 --batch_size 8
+
+# Done: set crop size -> 512 * 256 & resize
+# TODO: use eval mode
+# TODO: contour fill gap
+
+# to test available
+python train.py --name UAV_test --dataset_mode UAV_34_train --num_epochs 1 --gpu_ids 0 --batch_size 8
+
+# to test on testing set
+python test.py --name UAV_instance_vgg_loss_full --dataset_mode UAV_34_full --param_free_norm instance --ckpt_iter best --gpu_ids 0 --batch_size 8
+python test.py --name UAV_instance_vgg_loss_full --dataset_mode UAV_34_full --param_free_norm instance --ckpt_iter latest --gpu_ids 0 --batch_size 8
+
+# to calculate FID
+python -m pytorch_fid results/UAV_vgg_loss/best/image "/datasets/UAV/34_Competition 1_Training dataset/Training dataset/test_img/" --device cuda:0
+
+# to generate publuc/private 
+python test.py --name UAV_instance_512_z128_400 --dataset_mode UAV_34_public --param_free_norm instance --z_dim 128 --ckpt_iter best --results_dir private --gpu_ids 0 --batch_size 8
+python test.py --name UAV_instance_512_z128_400 --dataset_mode UAV_34_public --param_free_norm instance --z_dim 128 --ckpt_iter best --results_dir private2 --seed 5397 --gpu_ids 0 --batch_size 8
+
+# to use D net
+python eval.py --name UAV_instance_512_z128_400 --dataset_mode UAV_34_public --param_free_norm instance --z_dim 128 --gpu_ids 0 --batch_size 6 --ckpt_iter best --results_dir private
+python eval_pri.py --name UAV_instance_512_z128_400 --dataset_mode UAV_34_public --param_free_norm instance --z_dim 128 --gpu_ids 0 --ckpt_iter best --results_dir private

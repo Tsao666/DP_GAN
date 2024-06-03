@@ -4,7 +4,7 @@ import os
 import utils.utils as utils
 
 
-def read_arguments(train=True):
+def read_arguments(train=True, eval=False):
     parser = argparse.ArgumentParser()
     parser = add_all_arguments(parser, train)
     parser.add_argument('--phase', type=str, default='train')
@@ -14,7 +14,7 @@ def read_arguments(train=True):
         if opt.continue_train:
             update_options_from_file(opt, parser)
     opt = parser.parse_args()
-    opt.phase = 'train' if train else 'test'
+    opt.phase = 'train' if train else 'eval' if eval else 'test'
     if train:
         opt.loaded_latest_iter = 0 if not opt.continue_train else load_iter(opt)
     utils.fix_seed(opt.seed)
@@ -94,6 +94,12 @@ def set_dataset_default_lm(opt, parser):
         parser.set_defaults(lambda_labelmix=10.0)
         parser.set_defaults(EMA_decay=0.9999)
         parser.set_defaults(num_epochs=100)
+    if 'UAV' in opt.dataset_mode:
+        parser.set_defaults(contain_dontcare_label=False)
+        parser.set_defaults(freq_save_latest=400)
+        parser.set_defaults(freq_smooth_loss=10)
+        parser.set_defaults(freq_save_loss=100)
+        parser.set_defaults(freq_fid=200)
 
 
 def save_options(opt, parser):

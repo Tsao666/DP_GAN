@@ -1,0 +1,8 @@
+wandb
+checkpoints
+results
+public
+private
+__pycache__
+*.zip
+*.jpg

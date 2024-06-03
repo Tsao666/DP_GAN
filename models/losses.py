@@ -56,9 +56,9 @@ def get_n1_target(opt, input, label, target_is_real):
 def get_target_tensor(opt, input, target_is_real):
     if opt.gpu_ids != "-1":
         if target_is_real:
-            return torch.cuda.FloatTensor(1).fill_(1.0).requires_grad_(False).expand_as(input)
+            return torch.FloatTensor(1).fill_(1.0).requires_grad_(False).expand_as(input).cuda()
         else:
-            return torch.cuda.FloatTensor(1).fill_(0.0).requires_grad_(False).expand_as(input)
+            return torch.FloatTensor(1).fill_(0.0).requires_grad_(False).expand_as(input).cuda()
     else:
         if target_is_real:
             return torch.FloatTensor(1).fill_(1.0).requires_grad_(False).expand_as(input)

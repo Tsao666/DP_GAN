@@ -24,6 +24,7 @@ class fid_pytorch():
         self.val_dataloader = dataloader_val
         self.m1, self.s1 = self.compute_statistics_of_val_path(dataloader_val)
         self.best_fid = 99999999
+        self.cur_fid = 99999999
         self.path_to_save = os.path.join(self.opt.checkpoints_dir, self.opt.name, "FID")
         Path(self.path_to_save).mkdir(parents=True, exist_ok=True)
 
@@ -130,11 +131,11 @@ class fid_pytorch():
 
     def update(self, model, cur_iter):
         print("--- Iter %s: computing FID ---" % (cur_iter))
-        cur_fid = self.compute_fid_with_valid_path(model.module.netG, model.module.netEMA)
-        self.update_logs(cur_fid, cur_iter)
-        print("--- FID at Iter %s: " % cur_iter, "{:.2f}".format(cur_fid))
-        if cur_fid < self.best_fid:
-            self.best_fid = cur_fid
+        self.cur_fid = self.compute_fid_with_valid_path(model.module.netG, model.module.netEMA)
+        self.update_logs(self.cur_fid, cur_iter)
+        print("--- FID at Iter %s: " % cur_iter, "{:.2f}".format(self.cur_fid))
+        if self.cur_fid < self.best_fid:
+            self.best_fid = self.cur_fid
             is_best = True
         else:
             is_best = False
@@ -156,9 +157,9 @@ class fid_pytorch():
         np_file = np.array(np_file)
         plt.figure()
         plt.plot(np_file[0, :], np_file[1, :])
-        plt.grid(b=True, which='major', color='#666666', linestyle='--')
+        plt.grid(visible=True, which='major', color='#666666', linestyle='--')
         plt.minorticks_on()
-        plt.grid(b=True, which='minor', color='#999999', linestyle='--', alpha=0.2)
+        plt.grid(visible=True, which='minor', color='#999999', linestyle='--', alpha=0.2)
         plt.savefig(self.path_to_save + "/plot_fid", dpi=600)
         plt.close()
 

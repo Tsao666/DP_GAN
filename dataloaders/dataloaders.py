@@ -1,4 +1,5 @@
 import torch
+import dataloaders.UAV as UAV
 
 
 def get_dataset_name(mode):
@@ -11,14 +12,23 @@ def get_dataset_name(mode):
 
 
 def get_dataloaders(opt):
-    dataset_name   = get_dataset_name(opt.dataset_mode)
+    dataset_name, competition, mode = opt.dataset_mode.split('_')
 
-    file = __import__("dataloaders."+dataset_name)
-    dataset_train = file.__dict__[dataset_name].__dict__[dataset_name](opt, for_metrics=False)
-    dataset_val   = file.__dict__[dataset_name].__dict__[dataset_name](opt, for_metrics=True)
+    if mode == 'train':
+        dataset_train = UAV.UAVDataset(opt, competition, 'train')
+        dataset_val = UAV.UAVDataset(opt, competition, 'valid')
+    elif mode == 'test':
+        dataset_train = UAV.UAVDataset(opt, competition, 'test')
+        dataset_val = UAV.UAVDataset(opt, competition, 'test')
+    elif mode == 'full':
+        dataset_train = UAV.UAVDataset(opt, competition, 'full-train')
+        dataset_val = UAV.UAVDataset(opt, competition, 'full-valid')
+    elif mode in ['public', 'private']:
+        dataset_train = UAV.UAVDataset(opt, competition, mode)
+        dataset_val = UAV.UAVDataset(opt, competition, mode)
     print("Created %s, size train: %d, size val: %d" % (dataset_name, len(dataset_train), len(dataset_val)))
 
-    dataloader_train = torch.utils.data.DataLoader(dataset_train, batch_size = opt.batch_size, shuffle = True, drop_last=True, num_workers=40, pin_memory=True)
-    dataloader_val = torch.utils.data.DataLoader(dataset_val, batch_size = opt.batch_size, shuffle = False, drop_last=False, num_workers=40, pin_memory=True)
+    dataloader_train = torch.utils.data.DataLoader(dataset_train, batch_size = opt.batch_size, shuffle = True, drop_last=True, num_workers=20, pin_memory=True)
+    dataloader_val = torch.utils.data.DataLoader(dataset_val, batch_size = opt.batch_size, shuffle = False, drop_last=False, num_workers=20, pin_memory=True)
 
     return dataloader_train, dataloader_val

@@ -43,7 +43,9 @@ class results_saver():
 
     def save_im(self, im, mode, name):
         im = Image.fromarray(im.astype(np.uint8))
-        im.save(os.path.join(self.path_to_save[mode], name.split("/")[-1]).replace('.jpg', '.png'))
+        im = im.resize((428, 240), Image.BICUBIC)
+        # im.save(os.path.join(self.path_to_save[mode], name.split("/")[-1]).replace('.jpg', '.png'))
+        im.save(os.path.join(self.path_to_save[mode], name.split("/")[-1]).replace('.png', '.jpg'), quality=95, subsampling=0)
 
 
 class timer():
@@ -69,7 +71,7 @@ class timer():
 
 class losses_saver():
     def __init__(self, opt):
-        self.name_list = ["Generator", "Vgg", "D_fake", "D_real", "LabelMix"]
+        self.name_list = ["Generator", "Vgg", "InceptionV3", "D_fake", "D_real", "LabelMix"]
         self.opt = opt
         self.freq_smooth_loss = opt.freq_smooth_loss
         self.freq_save_loss = opt.freq_save_loss
@@ -183,18 +185,20 @@ class image_saver():
         os.makedirs(self.path, exist_ok=True)
 
     def visualize_batch(self, model, image, label, cur_iter):
-        self.save_images(label, "label", cur_iter, is_label=True)
-        self.save_images(image, "real", cur_iter)
+        img_path_dict = dict()
+        img_path_dict['label'] = self.save_images(label, "label", cur_iter, is_label=True)
+        img_path_dict['real'] = self.save_images(image, "real", cur_iter)
         with torch.no_grad():
             model.eval()
             fake = model.module.netG(label)
-            self.save_images(fake, "fake", cur_iter)
+            img_path_dict['fake'] = self.save_images(fake, "fake", cur_iter)
             model.train()
             if not self.opt.no_EMA:
                 model.eval()
                 fake = model.module.netEMA(label)
-                self.save_images(fake, "fake_ema", cur_iter)
+                img_path_dict['fake_ema'] = self.save_images(fake, "fake_ema", cur_iter)
                 model.train()
+        return img_path_dict
 
     def save_images(self, batch, name, cur_iter, is_label=False):
         fig = plt.figure()
@@ -210,6 +214,7 @@ class image_saver():
         fig.tight_layout()
         plt.savefig(self.path+str(cur_iter)+"_"+name)
         plt.close()
+        return f'{self.path}{cur_iter}_{name}.png'
 
 
 def tens_to_im(tens):

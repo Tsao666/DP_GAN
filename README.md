@@ -1,64 +1,27 @@
-# Dual Pyramid Generative Adversarial Networks for Semantic Image Synthesis
+# AI CUP 2024 春季賽：以生成式AI建構無人機於自然環境偵察時所需之導航資訊競賽 I － 影像資料生成競賽
 
-Official PyTorch implementation of the BMVC  2022 paper "Dual Pyramid Generative Adversarial Networks for Semantic Image Synthesis
-". The code allows the users to
-reproduce and extend the results reported in the study. Please cite the paper when reporting, reproducing or extending the results.
+TEAM_5101，feat. [@Tianming8585](https://github.com/Tianming8585)'s [PITI](https://github.com/Tianming8585/PITI)
+[報告](report.md) [Ensemble](ensemble.md)
 
-[[Arxiv](https://arxiv.org/abs/2210.04085)]  [[Poster](https://bmvc2022.mpi-inf.mpg.de/0285_poster.pdf)]
+## 資料前處理
 
-# Overview
+資料存放路徑與前處理參考 [UAV.py](./dataloaders/UAV.py)
 
-This repository implements the DP_GAN model, which generates realistic looking images from semantic label maps. In addition, many different images can be generated from any given label map by simply resampling a noise vector (first two rows of the figure below). The model also allows to just resample parts of the image (see the last two rows of the figure below). Check out the paper for details, as well as the appendix, which contains many additional examples.
+## 訓練
 
-
-## Setup
-First, clone this repository:
-```
-git clone https://github.com/sj-li/DP_GAN.git
-cd DP_GAN
-```
-The code is tested for Python 3.7.6 and the packages listed in [environment.yml](environment.yml).
-The basic requirements are PyTorch and Torchvision.
-The easiest way to get going is to install the dp_gan conda environment via
-```
-conda env create --file environment.yml
-conda activate dp_gan
-```
-## Datasets
-
-For Cityscapes or ADE20K, please follow the instructions for the dataset preparation as outlined in [https://github.com/NVlabs/SPADE](https://github.com/NVlabs/SPADE).
-
-## Training and Tessting
-
-Please refer to the scripts in ```./scripts```
-
-## Results
-Our method outperforms previous methods on almost all metrics
-
-<p align="center">
-<img src="figs/results.png" >
-</p>
-
-
-## Citation
-If you use this work please cite
-```
-@inproceedings{schonfeld_sushko_iclr2021,
-  title={Dual Pyramid Generative Adversarial Networks for Semantic Image Synthesis},
-  author={Shijie Li, Ming-Ming Cheng, Juergen Gall},
-  booktitle={British Machine Vision Conference},
-  year={2022}
-}   
+```bash
+python train.py --name UAV_instance_512_z128_400 --dataset_mode UAV_34_train --param_free_norm instance --z_dim 128 --num_epochs 400 --gpu_ids 0 --batch_size 8
 ```
 
-## Acknowledgement
+## 生成影像
 
-This code is based on [https://github.com/boschresearch/OASIS](OASIS)
+```bash
+python test.py --name UAV_instance_512_z128_400 --dataset_mode UAV_34_public --param_free_norm instance --z_dim 128 --ckpt_iter best --results_dir private --gpu_ids 0 --batch_size 8
+```
 
-## License
+## 生成 D 網路輸出
 
-This project is open-sourced under the AGPL-3.0 license. See the
-[LICENSE](LICENSE) file for details.
+```
+python eval_pri.py --name UAV_instance_512_z128_400 --dataset_mode UAV_34_public --param_free_norm instance --z_dim 128 --gpu_ids 0 --ckpt_iter best --results_dir private
+```
 
-For a list of other open source components included in this project, see the
-file [3rd-party-licenses.txt](3rd-party-licenses.txt).
