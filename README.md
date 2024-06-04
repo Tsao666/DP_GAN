@@ -30,7 +30,7 @@ python test.py --name UAV_instance_512_z128_400 --dataset_mode UAV_34_public --p
 python eval_pri.py --name UAV_instance_512_z128_400 --dataset_mode UAV_34_public --param_free_norm instance --z_dim 128 --gpu_ids 0 --ckpt_iter best --results_dir private
 ```
 
-The command will output the average values of the **fake**, **background**, **RI**, and **RO** classes inferred by the D network for each generated image from different models. Ensure the folder path for the generated images is correctly set before use.
+The command will output the average values of the **fake**, **background**, **RI**, and **RO** classes inferred by the D-net for each generated image from different models. Ensure the folder path for the generated images is correctly set before use.
 
 ## Ensemble
 
@@ -39,19 +39,6 @@ Use [ensemble.ipynb](./ensemble.ipynb) to set the ensemble rules and combine ima
 ## Others
 
 More command examples can be found in [UAV](./scripts/UAV).
-
-## Citation
-
-If you use this work please cite
-
-```
-@misc{
-  title  = {Apply DP-GAN on Generative-AI Navigation Information Competition for UAV Reconnaissance in Natural Environments},
-  author = {Wei-Chun Tsao},
-  url    = {https://github.com/Tsao666/DP_GAN},
-  year   = {2024}
-}
-```
 
 ## Reference
 
@@ -79,3 +66,16 @@ If you use this work please cite
 ## Acknowledgement
 
 This code is based on [DP_GAN](https://github.com/sj-li/DP_GAN)
+
+## Citation
+
+If you use this work please cite
+
+```
+@misc{
+  title  = {Apply DP-GAN on Generative-AI Navigation Information Competition for UAV Reconnaissance in Natural Environments},
+  author = {Wei-Chun Tsao},
+  url    = {https://github.com/Tsao666/DP_GAN},
+  year   = {2024}
+}
+```
