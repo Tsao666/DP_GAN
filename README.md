@@ -53,6 +53,29 @@ If you use this work please cite
 }
 ```
 
+## Reference
+
+- [sj-li/DP_GAN](https://github.com/sj-li/DP_GAN)
+
+  ```
+  @inproceedings{schonfeld_sushko_iclr2021,
+    title={Dual Pyramid Generative Adversarial Networks for Semantic Image Synthesis},
+    author={Shijie Li, Ming-Ming Cheng, Juergen Gall},
+    booktitle={British Machine Vision Conference},
+    year={2022}
+  }   
+  ```
+- [Tianming8585/PITI](https://github.com/Tianming8585/PITI)
+
+  ```
+  @misc{
+    title  = {Apply DP-GAN on Generative-AI Navigation Information Competition for UAV Reconnaissance in Natural Environments},
+    author = {Wei-Chun Tsao},
+    url    = {https://github.com/Tsao666/DP_GAN},
+    year   = {2024}
+  }
+  ```
+
 ## Acknowledgement
 
 This code is based on [DP_GAN](https://github.com/sj-li/DP_GAN)
