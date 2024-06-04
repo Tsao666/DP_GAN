@@ -56,8 +56,10 @@
 
 
 ## 程式碼
-> 實作程式碼包含前處理程式碼、訓練程式碼、生成程式碼、各項參數之設定(包括訓練權重)等。程式碼應附README.md檔案交代安裝配置環境，重要模塊輸出/輸入，以讓第三方使用者可以除錯、重新訓練與重現結果。
+
+[DP-GAN](https://github.com/Tsao666/DP_GAN)
 
 
 ## 使用的外部資源與參考文獻
+
 Li, S., Cheng, M. M., & Gall, J. (2022). Dual pyramid generative adversarial networks for semantic image synthesis. *arXiv preprint arXiv:2210.04085.*
