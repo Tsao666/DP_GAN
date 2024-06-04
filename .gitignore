@@ -6,3 +6,4 @@ private
 __pycache__
 *.zip
 *.jpg
+!figs/*
